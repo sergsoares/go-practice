@@ -11,11 +11,11 @@ Challenge: https://courses.calhoun.io/lessons/les_goph_01
 - [x] Compare inputs
 - [x] Add score in final
 - [x] Cleanup prints
-- [ ] Use variable timer to stop
-- [ ] Receive time as param
+- [x] Use variable timer to stop
+- [x] Receive time as param
 - [ ] Use variable file to problems
 - [ ] Receive other file from parameters
-
-
+- [ ] Shuffle questions
+- [ ] Create help cli
 
 
