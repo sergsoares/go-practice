@@ -4,9 +4,9 @@
 
 - [x] Setup Local postgres
 - [x] Implements API INSERT 
-- [ ] Implements Router
-- [ ] Implements API DELETE
+- [x] Implements Router
 - [ ] Implements API READ 
+- [ ] Implements API DELETE
 - [ ] Implements API UPDATE
 
 ## Tests:
