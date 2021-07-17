@@ -7,15 +7,16 @@ package main
 import (
 	"database/sql"
 	"fmt"
+
 	_ "github.com/lib/pq"
 )
 
 const (
-	host = "localhost"
-	port = 5432
-	user = "postgres"
+	host     = "localhost"
+	port     = 5432
+	user     = "postgres"
 	password = "postgres"
-	dbname = "postgres"
+	dbname   = "postgres"
 )
 
 func main() {
@@ -34,7 +35,7 @@ func main() {
 	fmt.Println("Connected")
 }
 
-func CheckError(err error){
+func CheckError(err error) {
 	if err != nil {
 		panic(err)
 	}
