@@ -82,13 +82,40 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln("Invalid id", id)
 	}
 
-	res := response{
-		ID:      int64(id),
-		Message: "test",
+	user, err := getUser(int64(id))
+
+	if err != nil {
+		log.Fatalln("Failed query", err)
 	}
 
-	json.NewEncoder(w).Encode(res)
+	json.NewEncoder(w).Encode(user)
 
+}
+
+func getUser(id int64) (models.User, error) {
+	db := CreateConnection()
+
+	defer db.Close()
+
+	statement := "SELECT * FROM users where userid=$1"
+
+	row := db.QueryRow(statement, id)
+
+	var user models.User
+	err := row.Scan(&user.ID, &user.Name, &user.Age, &user.Location)
+
+	switch err {
+	case sql.ErrNoRows:
+		log.Println("No rows returned")
+		return user, nil
+	case nil:
+		return user, nil
+	default:
+		log.Fatalln("Unable to scan row", err)
+
+	}
+
+	return user, err
 }
 
 func InsertUser(user models.User) int64 {
