@@ -10,7 +10,7 @@ import (
 
 type problem struct {
 	predicate string
-	result int
+	result    int
 }
 
 func main() {
@@ -40,13 +40,13 @@ func main() {
 
 		item := problem{
 			predicate: line[0],
-			result: converted,
+			result:    converted,
 		}
 
 		fmt.Printf("Question %v: ", item.predicate)
 
 		reader.Scan()
-		value, _:= strconv.Atoi(reader.Text())
+		value, _ := strconv.Atoi(reader.Text())
 
 		if value != item.result {
 			fmt.Println("Wrong Answer")
