@@ -1,4 +1,4 @@
-module hmac-lab
+module validation-flag
 
 go 1.16
 

@@ -1,23 +1,31 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/alexellis/hmac"
 )
 
 func main() {
-	input := []byte(`input message from api`)
-	secret := []byte(`so secret`)
+	var inputVar string
+	var secretVar string
+	var generateVar bool
 
-	digest := hmac.Sign(input, secret)
-	fmt.Printf("Digest: %x\n ", digest)
+	flag.BoolVar(&generateVar, "generate", false, "flag to define if digest or not")
+	flag.StringVar(&inputVar, "message", "", "message to create a digest from")
+	flag.StringVar(&secretVar, "secret", "", "secret for the digest")
+	flag.Parse()
 
-	err := hmac.Validate(input, fmt.Sprintf("sha1=%x", digest), string(secret))
-
-	if err != nil {
-		panic(err)
+	if len(strings.TrimSpace(secretVar)) == 0 {
+		panic("--secret is required")
 	}
 
-	fmt.Printf("Digest validated\n")
+	if generateVar {
+		fmt.Printf("Computing hash for: %q\nSecret: %q\n", inputVar, secretVar)
+
+		digest := hmac.Sign([]byte(inputVar), []byte(secretVar))
+		fmt.Printf("Digest: %x\n", digest)
+	}
 }
