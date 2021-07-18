@@ -12,5 +12,4 @@ func main() {
 	log.Println("Started server")
 
 	log.Fatal(http.ListenAndServe(":8080", r))
-
 }
