@@ -32,8 +32,10 @@ type ScrapeOutput struct {
 }
 
 func scrape(url string, sr *ScrapeRun) {
+	log.Println("Url:", url, "- Started")
 	res, err := http.Get(url)
 	if err != nil {
+		log.Println("Url:", url, "- Receive a error")
 		sr.Lock.Lock()
 		defer sr.Lock.Unlock()
 
@@ -48,6 +50,7 @@ func scrape(url string, sr *ScrapeRun) {
 
 	sr.Lock.Lock()
 	defer sr.Lock.Unlock()
+	log.Println("Url:", url, "- Not Receive a error")
 
 	length := res.ContentLength
 	if length == -1 {
@@ -59,6 +62,7 @@ func scrape(url string, sr *ScrapeRun) {
 		HTTPCode:   res.StatusCode,
 		HTTPLength: length,
 	}
+	log.Println("Url:", url, "- Finished")
 }
 
 func main() {
