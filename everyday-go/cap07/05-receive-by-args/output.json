@@ -1,0 +1,4 @@
+{"Url":"https://openfas.com","HTTPCode":502,"HTTPLength":0,"Error":{"Op":"Get","URL":"https://openfas.com","Err":{"Op":"dial","Net":"tcp","Source":null,"Addr":null,"Err":{"Err":"no such host","Name":"openfas.com","Server":"172.31.224.1:53","IsTimeout":false,"IsTemporary":false,"IsNotFound":true}}}}
+{"Url":"https://openfaas.com","HTTPCode":200,"HTTPLength":32679,"Error":null}
+{"Url":"https://google.com","HTTPCode":200,"HTTPLength":13540,"Error":null}
+{"Url":"https://inlets.dev","HTTPCode":200,"HTTPLength":71288,"Error":null}
