@@ -73,6 +73,7 @@ func main() {
 	content, _ := ioutil.ReadFile(path)
 	test := string(content)
 	v := strings.Split(test, "\n")
+	log.Println("Total of urls: ", len(v))
 
 	sr := ScrapeRun{
 		Lock:    &sync.Mutex{},
@@ -81,7 +82,6 @@ func main() {
 
 	wg := sync.WaitGroup{}
 	wg.Add(len(v))
-
 	for _, e := range v {
 		log.Println("Initializing scrape for: ", e)
 		newValue, _ := url.Parse(e)
@@ -93,7 +93,6 @@ func main() {
 			scrape(u, &sr)
 		}(newValue.String())
 	}
-
 	wg.Wait()
 
 	log.Print("Init output path", outputPath)
