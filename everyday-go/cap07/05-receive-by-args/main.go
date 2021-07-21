@@ -1,11 +1,13 @@
 package main
 
+//https://github.com/bensooter/URLchecker/blob/master/top-1000-websites.txt
 import (
 	"encoding/json"
 	"flag"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -82,10 +84,14 @@ func main() {
 
 	for _, e := range v {
 		log.Println("Initializing scrape for: ", e)
+		newValue, _ := url.Parse(e)
+		if newValue.Scheme == "" {
+			newValue.Scheme = "https"
+		}
 		go func(u string) {
 			defer wg.Done()
 			scrape(u, &sr)
-		}(e)
+		}(newValue.String())
 	}
 
 	wg.Wait()
