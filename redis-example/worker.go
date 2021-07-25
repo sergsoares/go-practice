@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"tidy/redisb"
 	"time"
@@ -9,18 +10,23 @@ import (
 
 func main() {
 
-	os.Create("result.txt")
+	f, _ := os.OpenFile("result.txt", os.O_APPEND|os.O_WRONLY, 0600)
+	defer f.Close()
 
-	var result string
 	for {
 		time.Sleep(time.Millisecond * 500)
-		fmt.Println("Timer")
+		log.Println("Looping")
 
-		for k, v := range redisb.GetAll() {
-			fmt.Println(k, v)
-			result += fmt.Sprint(k, v)
+		allKeys, _ := redisb.GetAll()
+
+		var result string
+		for _, k := range allKeys {
+			value, _ := redisb.Get(k)
+			fmt.Println(k, value)
+			result += fmt.Sprintln(k, value)
+
+			redisb.Del(k)
 		}
-		os.WriteFile("result.txt", []byte(result), os.ModeAppend)
+		f.WriteString(result)
 	}
-
 }
