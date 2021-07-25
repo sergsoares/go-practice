@@ -15,7 +15,9 @@ import (
 func main() {
 	godotenv.Load(os.Getenv("HOME") + "/.config/doctl/token.env")
 	var dropletName string
+	var configPath string
 	flag.StringVar(&dropletName, "name", "", "Give a name for your droplet")
+	flag.StringVar(&configPath, "config", "cloud-init.yml", "Give a name for your droplet")
 	flag.Parse()
 
 	client := godo.NewFromToken(os.Getenv("ACCESS_TOKEN"))
@@ -24,7 +26,7 @@ func main() {
 		Name:     dropletName,
 		Region:   "nyc3",
 		Size:     "s-1vcpu-1gb",
-		UserData: encodeFile(),
+		UserData: encodeFile(configPath),
 		SSHKeys: []godo.DropletCreateSSHKey{
 			{0, "43:7d:f6:a5:2e:15:78:4e:58:8a:f8:1a:ae:47:bf:5f"},
 		},
@@ -48,12 +50,11 @@ func main() {
 	fmt.Println(newDroplet)
 }
 
-func encodeFile() string {
-	f, _ := os.Open("cloud-init.yml")
+func encodeFile(path string) string {
+	f, _ := os.Open(path)
 
 	reader := bufio.NewReader(f)
 	content, _ := ioutil.ReadAll(reader)
 
 	return string(content)
-	// return base64.StdEncoding.EncodeToString(content)
 }
