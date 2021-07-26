@@ -1,0 +1,15 @@
+#cloud-config
+package_upgrade: true
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg-agent
+  - software-properties-common
+  - virtualbox
+  - virtualbox—ext–pack
+runcmd:
+  - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mhewedy/vermin/master/install.sh)"
+power_state:
+  mode: reboot
+  message: Restarting after installing k0s
