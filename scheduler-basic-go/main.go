@@ -7,7 +7,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
 
@@ -59,12 +58,25 @@ func (s Scheduler) CheckDueEvents() []Event {
 	return events
 }
 
+func (s Scheduler) callListeners(event Event) {
+	eventFn, ok := s.listeners[event.Name]
+	if ok {
+		go eventFn(event.Payload)
+		_, err := s.db.Exec(`DELETE FROM jobs where id = $1`, event.ID)
+		if err != nil {
+			log.Print("Error", err)
+		}
+	} else {
+		log.Println("Couldn't find the log attached with ", event.Name)
+	}
+}
+
 func (s Scheduler) AddListener(event string, listenFunc ListenFunc) {
 	s.listeners[event] = listenFunc
 }
 
 var eventListener = Listeners{
-	"log": func(payload string) { log.Println("executed job") },
+	"log": func(payload string) { log.Println("msg: ", payload) },
 }
 
 func newConnection() *sql.DB {
@@ -109,16 +121,22 @@ func main() {
 func workerf() {
 	db := newConnection()
 	s := NewScheduler(db, eventListener)
-	events := s.CheckDueEvents()
 
-	for _, v := range events {
-		log.Println("Showing", v)
+	for {
+		events := s.CheckDueEvents()
+		for _, v := range events {
+			log.Println("Showing", v)
+			s.callListeners(v)
+		}
+
+		time.Sleep(time.Millisecond * 500)
 	}
+
 }
 
 func addf(payload string) {
-	eventId := uuid.New()
+	// eventId := uuid.New()
 	db := newConnection()
 	s := NewScheduler(db, eventListener)
-	s.Schedule(eventId.String(), payload, time.Now())
+	s.Schedule("log", payload, time.Now())
 }
