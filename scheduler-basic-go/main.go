@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"flag"
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -39,6 +42,23 @@ func (s Scheduler) Schedule(event, payload string, runAt time.Time) {
 	if err != nil {
 		log.Println("Scheduler with errors", err)
 	}
+}
+
+func (s Scheduler) CheckInterval(ctx context.Context, duration time.Duration) {
+	ticker := time.NewTicker(duration)
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+			case <-ticker.C:
+				log.Println("Ticket Received...")
+				events := s.CheckDueEvents()
+				for _, e := range events {
+					s.callListeners(e)
+				}
+			}
+		}
+	}()
 }
 
 func (s Scheduler) CheckDueEvents() []Event {
@@ -119,19 +139,22 @@ func main() {
 }
 
 func workerf() {
+	ctx, cancel := context.WithCancel(context.Background())
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+
 	db := newConnection()
 	s := NewScheduler(db, eventListener)
 
-	for {
-		events := s.CheckDueEvents()
-		for _, v := range events {
-			log.Println("Showing", v)
-			s.callListeners(v)
+	s.CheckInterval(ctx, time.Second)
+	go func() {
+		for range interrupt {
+			log.Print("\nInterrupt received closing...")
+			cancel()
 		}
+	}()
 
-		time.Sleep(time.Millisecond * 500)
-	}
-
+	<-ctx.Done()
 }
 
 func addf(payload string) {
