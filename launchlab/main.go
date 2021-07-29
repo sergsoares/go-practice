@@ -1,13 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"context"
-	"encoding/base64"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"tidy/cloudinit"
 
 	"github.com/digitalocean/godo"
 	"github.com/rs/zerolog/log"
@@ -54,12 +54,22 @@ func launchDo(param Params) {
 	content, _ := ioutil.ReadAll(f)
 	yaml.Unmarshal(content, &token)
 
+	base64Content, err := cloudinit.GetFileAsBase64(string(content))
+	if err != nil {
+		panic(err)
+	}
+
+	dc := cloudinit.DockerComposeConfig{
+		Base64: base64Content,
+		Raw:    base64Content,
+	}
+
 	client := godo.NewFromToken(token.AccessToken)
 	createRequest := &godo.DropletCreateRequest{
 		Name:     param.name,
 		Region:   "nyc3",
 		Size:     "s-1vcpu-1gb",
-		UserData: generateCloudInit(elasticDockercompose),
+		UserData: cloudinit.GenerateDockerCompose(dc),
 		SSHKeys: []godo.DropletCreateSSHKey{
 			{0, "43:7d:f6:a5:2e:15:78:4e:58:8a:f8:1a:ae:47:bf:5f"},
 		},
@@ -80,14 +90,14 @@ func launchDo(param Params) {
 	fmt.Println(newDroplet)
 }
 
-func encodeFile(path string) string {
-	f, _ := os.Open(path)
+// func encodeFile(path string) string {
+// 	f, _ := os.Open(path)
 
-	reader := bufio.NewReader(f)
-	content, _ := ioutil.ReadAll(reader)
+// 	reader := bufio.NewReader(f)
+// 	content, _ := ioutil.ReadAll(reader)
 
-	return string(content)
-}
+// 	return string(content)
+// }
 
 // var baseyaml string = `#cloud-config
 // groups:
@@ -119,17 +129,17 @@ func encodeFile(path string) string {
 //   - sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 //   - sudo chmod +x /usr/local/bin/docker-compose`
 
-func generateCloudInit(templatePath string) string {
-	// elasticConfig := "examples/elasticsearch.yml"
-	f2, _ := os.Open(templatePath)
-	content2, _ := ioutil.ReadAll(f2)
+// func generateCloudInit(templatePath string) string {
+// 	// elasticConfig := "examples/elasticsearch.yml"
+// 	f2, _ := os.Open(templatePath)
+// 	content2, _ := ioutil.ReadAll(f2)
 
-	str := base64.StdEncoding.EncodeToString([]byte(content2))
+// 	str := base64.StdEncoding.EncodeToString([]byte(content2))
 
-	var command string
-	command += fmt.Sprint("echo ", str, " | base64 -d > /root/docker-compose.yml")
-	command += "\n  - docker-compose -f /root/docker-compose.yml up -d"
+// 	var command string
+// 	command += fmt.Sprint("echo ", str, " | base64 -d > /root/docker-compose.yml")
+// 	command += "\n  - docker-compose -f /root/docker-compose.yml up -d"
 
-	b := fmt.Sprintln(baseyaml, "\n", runcmd, "\n", " -", command)
-	return b
-}
+// 	b := fmt.Sprintln(baseyaml, "\n", runcmd, "\n", " -", command)
+// 	return b
+// }
