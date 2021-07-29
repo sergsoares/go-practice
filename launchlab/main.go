@@ -21,17 +21,19 @@ type Params struct {
 func main() {
 	var typeb string
 	var name string
+	var action string
 	flag.StringVar(&typeb, "type", "do", "Cloud that will be used")
 	flag.StringVar(&name, "name", "launchlab", "Name that will be used in Cloud Instance")
+	flag.StringVar(&action, "action", "create", "Name that will be used in Cloud Instance")
 	flag.Parse()
 	log.Debug().Msg("Args parsed")
 
 	param := Params{
-		name: name
+		name: name,
 	}
 	switch typeb {
 	case "do":
-		launchDo(name)
+		launchDo(param)
 	default:
 		fmt.Println("Type not supported:", typeb)
 	}
@@ -126,7 +128,7 @@ func generateCloudInit(templatePath string) string {
 
 	var command string
 	command += fmt.Sprint("echo ", str, " | base64 -d > /root/docker-compose.yml")
-	command += "\n  - docker-compose up -d -f /root/docker-compose.yml"
+	command += "\n  - docker-compose -f /root/docker-compose.yml up -d"
 
 	b := fmt.Sprintln(baseyaml, "\n", runcmd, "\n", " -", command)
 	return b
