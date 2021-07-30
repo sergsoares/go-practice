@@ -45,9 +45,6 @@ type DigitalOceanToken struct {
 
 var configurationLocation = os.Getenv("HOME") + "/.config/doctl/config.yaml"
 
-// var dockerComposeCloudInit = "templates/cloud-init.yml"
-var elasticDockercompose = "examples/elasticsearch.yml"
-
 func launchDo(param Params) {
 	token := DigitalOceanToken{}
 	f, _ := os.Open(configurationLocation)
@@ -89,57 +86,3 @@ func launchDo(param Params) {
 	fmt.Println("Droplet Created!!!")
 	fmt.Println(newDroplet)
 }
-
-// func encodeFile(path string) string {
-// 	f, _ := os.Open(path)
-
-// 	reader := bufio.NewReader(f)
-// 	content, _ := ioutil.ReadAll(reader)
-
-// 	return string(content)
-// }
-
-// var baseyaml string = `#cloud-config
-// groups:
-//   - docker
-// users:
-//   - default
-//   # the docker service account
-//   - name: docker-service
-//     groups: docker
-// package_upgrade: true
-// packages:
-//   - apt-transport-https
-//   - ca-certificates
-//   - curl
-//   - gnupg-agent
-//   - software-properties-common`
-
-// var runcmd string = `# power_state:
-// #   mode: reboot
-// #   message: Restarting after installing docker & docker-compose
-// runcmd:
-//   # install docker following the guide: https://docs.docker.com/install/linux/docker-ce/ubuntu/
-//   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-//   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-//   - sudo apt-get -y update
-//   - sudo apt-get -y install docker-ce docker-ce-cli containerd.io
-//   - sudo systemctl enable docker
-//   # install docker-compose following the guide: https://docs.docker.com/compose/install/
-//   - sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-//   - sudo chmod +x /usr/local/bin/docker-compose`
-
-// func generateCloudInit(templatePath string) string {
-// 	// elasticConfig := "examples/elasticsearch.yml"
-// 	f2, _ := os.Open(templatePath)
-// 	content2, _ := ioutil.ReadAll(f2)
-
-// 	str := base64.StdEncoding.EncodeToString([]byte(content2))
-
-// 	var command string
-// 	command += fmt.Sprint("echo ", str, " | base64 -d > /root/docker-compose.yml")
-// 	command += "\n  - docker-compose -f /root/docker-compose.yml up -d"
-
-// 	b := fmt.Sprintln(baseyaml, "\n", runcmd, "\n", " -", command)
-// 	return b
-// }
