@@ -50,9 +50,10 @@ export default {
 
   methods: {
     makeWebsiteThumbnail() {
-      console.log(`I should create a website thumbnail of ${this.websiteUrl}`)
-
-      axios.get("https://jsonplaceholder.typicode.com/photos/1", {})
+      // axios.get("https://jsonplaceholder.typicode.com/photos/1", {})
+      axios.post("http://localhost:8000/api/thumbnail", {
+        url: this.websiteUrl,
+      })
       .then((response) => {
         this.thumbnailUrl = response.data.thumbnailUrl
       })
