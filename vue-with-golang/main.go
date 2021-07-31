@@ -61,5 +61,6 @@ func thumbnailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+        log.Println(apiResponse)
 	fmt.Printf("Got the following url: %s\n", decoded.Url)
 }
