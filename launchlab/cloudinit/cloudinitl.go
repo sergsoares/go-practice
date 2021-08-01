@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"gopkg.in/yaml.v2"
 )
 
 var baseyaml string = `#cloud-config
@@ -55,19 +57,48 @@ func GenerateCloudInit(dc DockerComposeConfig) string {
 	return result
 }
 
+type sshKeys string
+
+type userCloudInit struct {
+	Name              string    `yaml:"name"`
+	SshAuthorizedKeys []sshKeys `yaml:"ssh-authorized-keys"`
+}
+type usersCloudInit struct {
+	Users []userCloudInit `yaml:"users"`
+}
+
 func GetConfiguredUser(path string) string {
 	f, _ := os.Open(path)
-	content, _ := ioutil.ReadAll(f)
-	result := fmt.Sprint(`users:
-	- name: launchlab
-	  ssh-authorized-keys:
-	    - `,
-		string(content))
+	fileContent, _ := ioutil.ReadAll(f)
+	users := usersCloudInit{
+		Users: []userCloudInit{
+			{
+				Name:              "launchlab",
+				SshAuthorizedKeys: []sshKeys{sshKeys(fileContent)},
+			},
+		},
+	}
+	content, err := yaml.Marshal(users)
+	if err != nil {
+		fmt.Print(err)
+	}
 
-	// result := fmt.Sprint(users, "\n     - ", string(content))
-
-	return result
+	return string(content)
 }
+
+// func GetConfiguredUser(path string) usersCloudInit {
+// 	f, _ := os.Open(path)
+// 	content, _ := ioutil.ReadAll(f)
+// 	result := fmt.Sprint(`users:
+// 	- name: launchlab
+// 	  ssh-authorized-keys:
+// 	    - `,
+// 		string(content))
+
+// 	// result := fmt.Sprint(users, "\n     - ", string(content))
+
+// 	return result
+// }
 
 func GetFileAsBase64(path string) (string, error) {
 	file, err := os.Open(path)
