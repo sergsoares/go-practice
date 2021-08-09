@@ -18,8 +18,23 @@ func main() {
 	e.GET("/show", show)
 	e.POST("/save", save)
 	e.POST("/savefile", saveFile)
+	e.POST("/users", usersPost)
 
 	e.Logger.Fatal(e.Start(":8080"))
+}
+
+type User struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+func usersPost(c echo.Context) error {
+	u := new(User)
+
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+	return c.JSON(http.StatusCreated, u)
 }
 
 func getUser(c echo.Context) error {
