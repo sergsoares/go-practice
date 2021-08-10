@@ -1,0 +1,19 @@
+[Unit]
+Description=MyApp Go Service
+ConditionPathExists=/home/lucian/myapp
+After=network.target
+
+[Service]
+Type=simple
+User=burn
+Group=burn
+WorkingDirectory=/tmp
+ExecStart=/usr/local/go/bin/go run .
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=appgoservice
+
+[Install]
+WantedBy=multi-user.target
