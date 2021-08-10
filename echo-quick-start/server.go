@@ -14,13 +14,20 @@ func main() {
 		return c.String(http.StatusOK, "Hello World")
 	})
 
+	track := func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			println("request to /users")
+			return next(c)
+		}
+	}
+
 	e.GET("/users/:id", getUser)
 	e.GET("/show", show)
 	e.POST("/save", save)
 	e.POST("/savefile", saveFile)
-	e.POST("/users", usersPost)
+	e.POST("/users", usersPost, track)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":8081"))
 }
 
 type User struct {
@@ -29,11 +36,15 @@ type User struct {
 }
 
 func usersPost(c echo.Context) error {
-	u := new(User)
+	u := User{
+		Name:  "Sergio",
+		Email: "sergio@gmail.com",
+	}
 
 	if err := c.Bind(u); err != nil {
 		return err
 	}
+
 	return c.JSON(http.StatusCreated, u)
 }
 
