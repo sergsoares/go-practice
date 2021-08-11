@@ -1,14 +1,15 @@
 [Unit]
 Description=MyApp Go Service
-ConditionPathExists=/home/lucian/myapp
+ConditionPathExists=/root/webapp
 After=network.target
 
 [Service]
 Type=simple
-User=burn
-Group=burn
-WorkingDirectory=/tmp
-ExecStart=/usr/local/go/bin/go run .
+User=root
+
+WorkingDirectory=/root
+ExecStart=/root/webapp
+
 Restart=on-failure
 RestartSec=10
 StandardOutput=syslog
