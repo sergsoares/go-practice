@@ -2,8 +2,9 @@ deploy(){
     DROPLET_IP=$(getDropletIP)
 
     go build
+    ssh "root@${DROPLET_IP}" "systemctl stop appgo"
 	scp webapp "root@${DROPLET_IP}:/root"
-	ssh root@${DROPLET_IP} "./webapp"
+    ssh "root@${DROPLET_IP}" "systemctl start appgo"
 }
 
 getDropletId(){

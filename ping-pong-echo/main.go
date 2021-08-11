@@ -9,7 +9,7 @@ import (
 func main() {
 	e := echo.New()
 	e.GET("/ping", pong)
-	e.Logger.Fatal(e.Start(":8181"))
+	e.Logger.Fatal(e.Start(":80"))
 }
 
 type Pong struct {
